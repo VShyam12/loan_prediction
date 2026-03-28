@@ -14,12 +14,14 @@ Frontend: HTML, CSS, JavaScript
 Machine Learning: Scikit-learn, XGBoost
 Deep Learning: PyTorch
 Data Processing: Pandas, NumPy
+
 ⚙️ Features
 🔍 Predict loan eligibility instantly
 📊 Uses both ML and DL models for prediction
 🖥️ Simple and intuitive web interface
 ⚡ Fast and efficient predictions
 📁 Modular project structure
+
 📂 Project Structure
 loan_prediction/
 │
@@ -42,9 +44,9 @@ XGBoost Classifier
 Deep Neural Network (PyTorch)
 
 These models are trained on historical loan data to classify applicants as:
-
 ✅ Eligible (Low Risk)
 ❌ Not Eligible (High Risk / Default)
+
 ▶️ How to Run the Project Locally
 1️⃣ Clone the Repository
 git clone https://github.com/VShyam12/loan_prediction.git
@@ -58,7 +60,6 @@ pip install -r requirements.txt
 4️⃣ Train Models (Important)
 
 Since model files are not included in the repository:
-
 python train_models.py
 5️⃣ Run the Flask App
 python app.py
@@ -68,9 +69,6 @@ http://127.0.0.1:5000/
 🚫 Model files (.pkl, .pt) are excluded for security and size reasons
 🚫 Dataset (.csv) is not included in the repository
 ✔️ Generate models locally using train_models.py
-📸 Screenshots (Optional)
-
-Add screenshots of your UI here for better presentation
 
 🌐 Future Improvements
 Deploy the app on cloud (Render / AWS)
