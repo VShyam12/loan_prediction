@@ -1,0 +1,32 @@
+# Sensitive / config
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ML models (large + should not be pushed)
+*.pkl
+*.pt
+
+# Dataset
+*.csv
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Build / misc
+dist/
+build/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

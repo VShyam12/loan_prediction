@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Prediction Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4 sidebar">
+                <div class="sidebar-content">
+                    <h1 class="text-center mb-4"><i class="fas fa-landmark"></i> Loan Predictor</h1>
+                    <p class="lead text-center">Your loan eligibility results</p>
+                    <div class="model-info">
+                        <h4><i class="fas fa-cogs"></i> Model Used</h4>
+                        <p>{{ model_type|capitalize }} {% if model_type == 'xgboost' %}<i class="fas fa-tree"></i>{% else %}<i class="fas fa-brain"></i>{% endif %}</p>
+                        <div class="accuracy-meter">
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ (model_confidence*100) }}%;" aria-valuenow="{{ (model_confidence*100) }}" aria-valuemin="0" aria-valuemax="100">{{ (model_confidence*100)|round(2) }}%</div>
+                            </div>
+                            <p class="text-center mt-2">Model Confidence</p>
+                        </div>
+                        
+                        <h4 class="mt-3"><i class="fas fa-chart-line"></i> Risk Assessment</h4>
+                        <div class="risk-score-meter">
+                            {% set risk_level = 'Low' if risk_score < 30 else 'Moderate' if risk_score < 65 else 'High' if risk_score < 85 else 'Very High' %}
+                            {% set risk_color = 'success' if risk_score < 30 else 'warning' if risk_score < 65 else 'danger' if risk_score < 85 else 'dark' %}
+                            <div class="progress">
+                                <div class="progress-bar bg-{{ risk_color }}" role="progressbar" style="width: {{ risk_score }}%;" aria-valuenow="{{ risk_score }}" aria-valuemin="0" aria-valuemax="100">{{ risk_score }}/100</div>
+                            </div>
+                            <p class="text-center mt-2">Risk Score: <span class="badge bg-{{ risk_color }}">{{ risk_level }}</span></p>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="/" class="btn btn-outline-light"><i class="fas fa-arrow-left"></i> Try Another Prediction</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 main-content">
+                <div class="result-container">
+                    <div class="result-header {% if approved %}approved{% else %}rejected{% endif %}">
+                        <div class="result-icon">
+                            {% if approved %}
+                            <i class="fas fa-check-circle"></i>
+                            {% else %}
+                            <i class="fas fa-times-circle"></i>
+                            {% endif %}
+                        </div>
+                        <h2>
+                            {% if approved %}
+                            Loan Approved!
+                            {% else %}
+                            Loan Not Approved
+                            {% endif %}
+                        </h2>
+                        <p class="probability">
+                            {% if approved %}
+                            Model probability: {{ (model_confidence*100)|round(2) }}%. Final eligibility: {{ (probability*100)|round(2) }}% (decision threshold 50%).
+                            {% else %}
+                            Model probability: {{ (model_confidence*100)|round(2) }}%. Final eligibility after risk adjustments: {{ (probability*100)|round(2) }}% — this is below our approval threshold.
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card risk-factors-card">
+                                <div class="card-header">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> Risk Factors</h4>
+                                </div>
+                                <div class="card-body">
+                                    {% if risk_factors %}
+                                        <ul class="risk-list">
+                                            {% for factor in risk_factors %}
+                                                {% if "Extremely High Loan-to-Income Ratio" in factor %}
+                                                    <li class="critical-risk"><i class="fas fa-exclamation-circle"></i> <strong>{{ factor }}</strong> <span class="badge bg-danger">Critical</span></li>
+                                                {% else %}
+                                                    <li><i class="fas fa-exclamation-circle"></i> {{ factor }}</li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p class="text-success"><i class="fas fa-check"></i> No significant risk factors identified!</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card improvements-card">
+                                <div class="card-header">
+                                    <h4><i class="fas fa-lightbulb"></i> Improvement Suggestions</h4>
+                                </div>
+                                <div class="card-body">
+                                    {% if improvements %}
+                                        <ul class="improvement-list">
+                                            {% for improvement in improvements %}
+                                                <li><i class="fas fa-arrow-up"></i> {{ improvement }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <p class="text-success"><i class="fas fa-thumbs-up"></i> Your profile looks great! No specific improvements needed.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4 input-summary-card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-clipboard-list"></i> Your Information Summary</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Personal Details</h5>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td>Age:</td>
+                                            <td>{{ input_data.Age }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Income:</td>
+                                            <td>${{ input_data.Income|int }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Credit Score:</td>
+                                            <td>{{ input_data.CreditScore|int }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Employment:</td>
+                                            <td>{{ input_data.EmploymentType }} ({{ input_data.MonthsEmployed|int }} months)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Education:</td>
+                                            <td>{{ input_data.Education }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Marital Status:</td>
+                                            <td>{{ input_data.MaritalStatus }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Loan Details</h5>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td>Loan Amount:</td>
+                                            <td>${{ input_data.LoanAmount|int }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Interest Rate:</td>
+                                            <td>{{ input_data.InterestRate }}%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Loan Term:</td>
+                                            <td>{{ input_data.LoanTerm|int }} months</td>
+                                        </tr>
+                                        <tr>
+                                            <td>DTI Ratio:</td>
+                                            <td>{{ input_data.DTIRatio }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Purpose:</td>
+                                            <td>{{ input_data.LoanPurpose }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Co-Signer:</td>
+                                            <td>{{ input_data.HasCoSigner }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
