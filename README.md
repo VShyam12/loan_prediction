@@ -23,22 +23,20 @@ Data Processing: Pandas, NumPy
 📁 Modular project structure
 
 📂 Project Structure
+```
 loan_prediction/
-│
-├── app.py                  # Main Flask application
-├── train_models.py        # Script to train ML/DL models
-├── requirements.txt       # Dependencies
-├── README.md              # Project documentation
-│
-├── templates/             # HTML files
+├── app.py                      # Main Flask application
+├── train_models.py             # Script to train ML/DL models
+├── requirements.txt            # Dependencies
+├── README.md                   # Project documentation
+├── templates/                  # HTML files
 │   ├── index.html
 │   └── result.html
-│
-├── static/                # CSS & JS
+├── static/                     # CSS & JS
 │   ├── css/
 │   └── js/
-│
-├── Loan_Prediction.ipynb  # Model development notebook
+└── Loan_Prediction.ipynb       # Model development notebook
+```
 🧪 Machine Learning Models Used
 XGBoost Classifier
 Deep Neural Network (PyTorch)
